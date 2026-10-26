@@ -82,7 +82,7 @@ public abstract class Account {
             throw new InvalidDateException("date mustn't be in the past");
 
         balance += amount;
-        bookings.add(new Booking(date.toUnix(), amount));
+        bookings.add(new Booking(date.toUnix(), amount, "Einzahlung"));
 
         return balance;
     }
@@ -105,7 +105,7 @@ public abstract class Account {
 
         balance -= amount;
         // Achtung: hier Buchung mit negativem Betrag!
-        bookings.add(new Booking(date.toUnix(), -amount));
+        bookings.add(new Booking(date.toUnix(), -amount, "Auszahlung"));
 
         return balance;
     }
