@@ -22,14 +22,27 @@ public class BankTests {
 
     @Test
     @DisplayName("Simple deposit on Bank-SavingsAccount should work")
-    public void testDeposit() {
-        fail("ToDo");
+    public void testDeposit() throws Exception {
+        Bank bank = new Bank();
+        String id = bank.createSavingsAccount();
+
+        bank.deposit(id, Scheduled.now(), 100_000, "Lohn");
+
+        assertEquals(100_000, bank.getBalance(id));
+        assertEquals("Lohn", bank.getAccount(id).getBookings().get(0).text());
     }
 
     @Test
     @DisplayName("Simple withdraw on Bank-SavingsAccount should work")
-    public void testWithdraw() {
-        fail("ToDo");
+    public void testWithdraw() throws Exception {
+        Bank bank = new Bank();
+        String id = bank.createSavingsAccount();
+        bank.deposit(id, Scheduled.now(), 100_000);
+
+        long balance = bank.withdraw(id, Scheduled.now(), 30_000, "Bancomat");
+
+        assertEquals(70_000, balance);
+        assertEquals("Bancomat", bank.getAccount(id).getBookings().get(1).text());
     }
 
     /**
