@@ -13,8 +13,8 @@ import java.util.TreeMap;
 /**
  * Die Bank.
  *
- * @author luigicavuoti, lro@gmx.ch
- * @version 2.1
+ * @author luigicavuoti, lro@gmx.ch, Hassan Alayan
+ * @version 2.2
  */
 public class Bank {
     /**
@@ -91,60 +91,72 @@ public class Bank {
      * Gibt den Kontostand des Kontos mit der gegebenen
      * Kontonummer zurück.
      *
-     * <p>
-     * Falls kein Konto mit der gesuchten Kontonummer
-     * existiert, gibt diese Methode 0 (zero) zurück.
-     * </p>
-     *
      * @param id die Kontonummer
      * @return long der Kontostand des Kontos
+     * @throws InvalidAmountException wenn kein Konto mit dieser Kontonummer existiert
      */
     public long getBalance(String id) throws InvalidAmountException {
         return getAccount(id).getBalance();
     }
 
     /**
-     * Zahlt den gegebenen Betrag auf das Konto mit
-     * der gegebenen Kontonummer ein.
-     *
-     * <p>
-     * Diese Methode kann <code>false</code> zur�ckgeben,
-     * falls das Konto nicht existiert, oder falls die
-     * Einzahlung auf dem Konto nicht funktioniert.
-     * </p>
+     * Zahlt den gegebenen Betrag auf das Konto mit der gegebenen
+     * Kontonummer ein (Standardtext "Einzahlung").
      *
      * @param id     die Kontonummer
      * @param date   das Transaktionsdatum
-     * @param amount der einzuzahlende Betrag
+     * @param amount der einzuzahlende Betrag in Millirappen
+     * @throws InvalidAmountException wenn das Konto nicht existiert oder der Betrag ungültig ist
+     * @throws InvalidDateException   wenn das Datum in der Vergangenheit liegt
      */
-    public void deposit(String id, Scheduled date,
-                        long amount) throws InvalidAmountException, InvalidAmountException, InvalidDateException {
-        var account = getAccount(id);
-
-        account.deposit(date, amount);
+    public void deposit(String id, Scheduled date, long amount) throws InvalidAmountException, InvalidDateException {
+        getAccount(id).deposit(date, amount);
     }
 
     /**
-     * Hebt den gegebenen Betrag vom Konto mit
-     * der gegebenen Kontonummer ab.
-     *
-     * <p>
-     * Diese Methode kann <code>false</code> zur�ckgeben,
-     * falls das Konto nicht existiert, oder falls das
-     * Abheben vom Konto nicht funktioniert.
-     * </p>
+     * Zahlt den gegebenen Betrag mit eigenem Buchungstext ein.
      *
      * @param id     die Kontonummer
      * @param date   das Transaktionsdatum
-     * @param amount der abzuhebende Betrag
-     * @return new balance
+     * @param amount der einzuzahlende Betrag in Millirappen
+     * @param text   der Buchungstext
+     * @throws InvalidAmountException wenn das Konto nicht existiert oder der Betrag ungültig ist
+     * @throws InvalidDateException   wenn das Datum in der Vergangenheit liegt
      */
-    public long withdraw(String id, Scheduled date,
-                            long amount) throws InvalidAmountException, InvalidAmountException, InvalidDateException {
-        var account = getAccount(id);
-
-        return account.withdraw(date, amount);
+    public void deposit(String id, Scheduled date, long amount, String text) throws InvalidAmountException, InvalidDateException {
+        getAccount(id).deposit(date, amount, text);
     }
+
+    /**
+     * Hebt den gegebenen Betrag vom Konto mit der gegebenen
+     * Kontonummer ab (Standardtext "Auszahlung").
+     *
+     * @param id     die Kontonummer
+     * @param date   das Transaktionsdatum
+     * @param amount der abzuhebende Betrag in Millirappen
+     * @return der neue Saldo des Kontos
+     * @throws InvalidAmountException wenn das Konto nicht existiert, der Betrag ungültig ist oder der Saldo nicht reicht
+     * @throws InvalidDateException   wenn das Datum in der Vergangenheit liegt
+     */
+    public long withdraw(String id, Scheduled date, long amount) throws InvalidAmountException, InvalidDateException {
+        return getAccount(id).withdraw(date, amount);
+    }
+
+    /**
+     * Hebt den gegebenen Betrag mit eigenem Buchungstext ab.
+     *
+     * @param id     die Kontonummer
+     * @param date   das Transaktionsdatum
+     * @param amount der abzuhebende Betrag in Millirappen
+     * @param text   der Buchungstext
+     * @return der neue Saldo des Kontos
+     * @throws InvalidAmountException wenn das Konto nicht existiert, der Betrag ungültig ist oder der Saldo nicht reicht
+     * @throws InvalidDateException   wenn das Datum in der Vergangenheit liegt
+     */
+    public long withdraw(String id, Scheduled date, long amount, String text) throws InvalidAmountException, InvalidDateException {
+        return getAccount(id).withdraw(date, amount, text);
+    }
+
     public List<Account> top5HighestBalances() {
         return accounts.values()
                 .stream()

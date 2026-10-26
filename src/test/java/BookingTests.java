@@ -3,14 +3,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
  * Tests für die Klasse Booking.
  *
- * @author Luigi Cavuoti
- * @version 1.1
+ * @author Luigi Cavuoti, Hassan Alayan
+ * @version 1.2
  */
 public class BookingTests
 {
@@ -28,12 +29,46 @@ public class BookingTests
 	}
 
 	/**
+	 * Eine Abhebung wird als negativer Betrag gespeichert.
+	 */
+	@Test
+	@DisplayName("Negative amount (withdrawal) is allowed")
+	public void testNegativeAmount()
+	{
+		Booking booking = new Booking(1000, -200_000, "Bancomat");
+		assertEquals(-200_000, booking.amount());
+	}
+
+	/**
+	 * Eine Buchung ohne Text wird abgelehnt.
+	 */
+	@Test
+	@DisplayName("Text null is rejected")
+	public void testNullText()
+	{
+		assertThrows(IllegalArgumentException.class, () -> new Booking(1000, 500_000, null));
+	}
+
+	/**
+	 * Ein leerer Text oder nur Leerzeichen wird abgelehnt.
+	 */
+	@Test
+	@DisplayName("Empty or blank text is rejected")
+	public void testBlankText()
+	{
+		assertThrows(IllegalArgumentException.class, () -> new Booking(1000, 500_000, ""));
+		assertThrows(IllegalArgumentException.class, () -> new Booking(1000, 500_000, "   "));
+	}
+
+	/**
 	 * Experimente mit print().
 	 */
 	@Test
-	@DisplayName("Not a real test, it prints a list of bookings")
+	@DisplayName("toString of a booking contains the text")
 	public void testPrint()
 	{
-		fail("ToDo");
+		Booking booking = new Booking(1000, 500_000, "Lohn");
+		System.out.println(booking);
+		assertTrue(booking.toString().contains("Lohn"));
 	}
 }
