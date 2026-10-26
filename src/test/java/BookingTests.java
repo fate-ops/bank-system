@@ -1,6 +1,8 @@
+import ch.bbw.Booking;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 
@@ -13,13 +15,16 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class BookingTests
 {
 	/**
-	 * Tests f�r die Erzeugung von Buchungen.
+	 * Tests für die Erzeugung von Buchungen.
 	 */
 	@Test
 	@DisplayName("Construct Simple Booking, should work ")
 	public void testInitialization()
 	{
-		fail("ToDo");
+		Booking booking = new Booking(1000, 500_000, "Lohn");
+		assertEquals(1000, booking.date());
+		assertEquals(500_000, booking.amount());
+		assertEquals("Lohn", booking.text());
 	}
 
 	/**
