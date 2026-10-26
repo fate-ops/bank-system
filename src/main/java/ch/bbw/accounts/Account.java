@@ -53,6 +53,8 @@ public abstract class Account {
         return id;
     }
 
+    public abstract String getAccountType();
+
     /**
      * Gibt alle Buchungen des Kontos zurück.
      *

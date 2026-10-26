@@ -23,4 +23,9 @@ public class PromoYouthSavingsAccount extends SavingsAccount {
 
         return super.withdraw(date, amount, text);
     }
+
+    @Override
+    public String getAccountType() {
+        return "Promo-Jugendsparkonto";
+    }
 }
