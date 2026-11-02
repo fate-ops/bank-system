@@ -1,21 +1,32 @@
 package ch.bbw;
 
+import java.util.concurrent.atomic.AtomicLong;
 import ch.bbw.accounts.*;
 
 /**
  * Erzeugt alle Konten der Bank und vergibt ihre Kontonummern.
  *
+ * <p>
+ * Die Factory ist die einzige Stelle, an der {@code new} für ein Konto steht.
+ * Der Zähler ist für alle Kontoarten gemeinsam (S-1000, Y-1001, P-1002), damit
+ * die Nummer allein schon eindeutig ist, auch ohne Präfix.
+ * </p>
+ *
  * @author Luigi Cavuoti, Hassan Alayan
- * @version 2.0
+ * @version 2.1
  */
 public class AccountFactory {
     /**
      * Next account id.
      */
-    private long nextAccountId;
+    /**
+     * Nächste Kontonummer. AtomicLong, damit zwei gleichzeitige Aufrufe
+     * nie dieselbe Nummer bekommen (wichtig, sobald Spring HTTP-Requests parallel bedient).
+     */
+    private final AtomicLong nextAccountId;
 
     public AccountFactory() {
-        this.nextAccountId = 1000;
+        this.nextAccountId = new AtomicLong(1000);
     }
 
     /**
@@ -36,7 +47,7 @@ public class AccountFactory {
      * @return das neue Konto
      */
     public Account create(AccountType type, long creditLimit) {
-        String id = type.getPrefix() + "-" + nextAccountId++;
+        String id = type.getPrefix() + "-" + nextAccountId.getAndIncrement();
 
         return switch (type) {
             case SAVINGS -> new SavingsAccount(id);
