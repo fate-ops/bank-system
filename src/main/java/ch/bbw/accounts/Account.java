@@ -5,9 +5,6 @@ import ch.bbw.Scheduled;
 import ch.bbw.exceptions.InvalidAmountException;
 import ch.bbw.exceptions.InvalidDateException;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,6 +50,10 @@ public abstract class Account {
         return id;
     }
 
+    /**
+     * Liefert die Bezeichnung der Kontoart.
+     * @return lesbare Bezeichnung der Kontoart
+     */
     public abstract String getAccountType();
 
     /**
@@ -77,10 +78,10 @@ public abstract class Account {
     }
 
     /**
-     * Checks if the transaction date is not in the past.
+     * Prüft, ob das Transaktionsdatum in der Vergangenheit liegt.
      *
      * @param date the transaction date
-     * @return whether the transaction date is valid
+     * @return true, wenn das Datum in der Vergangenheit liegt
      */
     public boolean isInvalidTransaction(Scheduled date) {
         return date.isPastDue();
@@ -164,7 +165,7 @@ public abstract class Account {
      * @return der Kontoauszug als Text, Beträge in CHF
      */
     public String printStatement() {
-        return statement(bookings, "Kontoauszug " + id);
+        return AccountStatement.render(bookings, "Kontoauszug " + id);
     }
 
     /**
@@ -176,49 +177,6 @@ public abstract class Account {
      * @return der Kontoauszug des Monats; der Saldo ist die Summe der Buchungen dieses Monats
      */
     public String printStatement(int year, int month) {
-        ZoneId zone = ZoneId.of("Europe/Zurich");
-        List<Booking> monthBookings = bookings.stream()
-                .filter(b -> {
-                    LocalDate day = Instant.ofEpochMilli(b.date()).atZone(zone).toLocalDate();
-                    return day.getYear() == year && day.getMonthValue() == month;
-                })
-                .toList();
-        return statement(monthBookings, "Kontoauszug " + id + " " + month + "/" + year);
-    }
-
-    /**
-     * Baut den Text eines Kontoauszugs: eine Zeile pro Buchung und der Saldo.
-     *
-     * @param list  die Buchungen, die auf den Auszug kommen
-     * @param title die Überschrift
-     * @return der Kontoauszug als Text
-     */
-    private String statement(List<Booking> list, String title) {
-        StringBuilder sb = new StringBuilder(title).append("\n");
-        long sum = 0;
-        for (Booking b : list) {
-            sb.append(Instant.ofEpochMilli(b.date()))
-                    .append("  ")
-                    .append(formatAmount(b.amount()))
-                    .append("  ")
-                    .append(b.text())
-                    .append("\n");
-            sum += b.amount();
-        }
-        sb.append("Saldo: ").append(formatAmount(sum));
-        return sb.toString();
-    }
-
-    /**
-     * Formatiert Millirappen als Frankenbetrag mit Rappen,
-     * z. B. 123_456 als "CHF 1.23" und -50_000 als "CHF -0.50".
-     *
-     * @param millirappen der Betrag in Millirappen (100_000 = 1 Franken)
-     * @return der lesbare Betrag
-     */
-    private static String formatAmount(long millirappen) {
-        String sign = millirappen < 0 ? "-" : "";
-        long abs = Math.abs(millirappen);
-        return String.format("CHF %s%d.%02d", sign, abs / 100_000, (abs % 100_000) / 1_000);
+        return AccountStatement.renderMonth(bookings, id, year, month);
     }
 }

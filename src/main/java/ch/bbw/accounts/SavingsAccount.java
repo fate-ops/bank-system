@@ -51,6 +51,7 @@ public class SavingsAccount extends Account
 		return super.withdraw(date, amount, text);
 	}
 
+	/** {@inheritDoc} */
 	@Override
 	public String getAccountType() {
 		return "Sparkonto";

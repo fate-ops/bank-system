@@ -70,4 +70,15 @@ public class SalaryAccountTests {
 		assertEquals(0, account.getBalance());
 		assertTrue(account.getBookings().isEmpty());
 	}
+
+    @Test
+    void withdrawalThatWouldUnderflowLeavesBookingsUnchanged() throws Exception {
+        var account = new SalaryAccount("P-1", -100_000);
+        account.withdraw(Scheduled.now(), 100_000);
+
+        assertThrows(InvalidAmountException.class,
+                () -> account.withdraw(Scheduled.now(), Long.MAX_VALUE));
+        assertEquals(-100_000, account.getBalance());
+        assertEquals(1, account.getBookings().size());
+    }
 }

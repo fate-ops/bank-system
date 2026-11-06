@@ -17,14 +17,12 @@ import ch.bbw.accounts.*;
  */
 public class AccountFactory {
     /**
-     * Next account id.
-     */
-    /**
      * Nächste Kontonummer. AtomicLong, damit zwei gleichzeitige Aufrufe
      * nie dieselbe Nummer bekommen (wichtig, sobald Spring HTTP-Requests parallel bedient).
      */
     private final AtomicLong nextAccountId;
 
+    /** Erstellt eine Factory mit der ersten Nummer 1000. */
     public AccountFactory() {
         this.nextAccountId = new AtomicLong(1000);
     }
@@ -45,6 +43,8 @@ public class AccountFactory {
      * @param type        die Kontoart
      * @param creditLimit Kreditlimite (nur für SALARY, sonst ignoriert)
      * @return das neue Konto
+     * @throws IllegalArgumentException bei positiver Kreditlimite für ein Lohnkonto
+     * @throws NullPointerException wenn keine Kontoart angegeben ist
      */
     public Account create(AccountType type, long creditLimit) {
         String id = type.getPrefix() + "-" + nextAccountId.getAndIncrement();
@@ -56,14 +56,28 @@ public class AccountFactory {
         };
     }
 
+    /**
+     * Erstellt ein Sparkonto.
+     * @return neues Sparkonto mit einer eindeutigen Nummer dieser Factory
+     */
     public Account createSavingsAccount() {
         return create(AccountType.SAVINGS, 0);
     }
 
+    /**
+     * Erstellt ein Jugendkonto.
+     * @return neues Jugendkonto mit einer eindeutigen Nummer dieser Factory
+     */
     public Account createPromoYouthSavingsAccount() {
         return create(AccountType.PROMO_YOUTH, 0);
     }
 
+    /**
+     * Erstellt ein Lohnkonto.
+     * @param creditLimit niedrigster zulässiger Saldo in Millirappen
+     * @return neues Lohnkonto mit einer eindeutigen Nummer dieser Factory
+     * @throws IllegalArgumentException bei positiver Kreditlimite
+     */
     public Account createSalaryAccount(long creditLimit) {
         return create(AccountType.SALARY, creditLimit);
     }

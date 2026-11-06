@@ -11,7 +11,17 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 /**
- * Die Bank.
+ * Verwaltet Konten und delegiert deren Erstellung und Buchungsregeln.
+ *
+ * <p>Eine gemeinsame Bank bietet einen zentralen Kontobestand und einen
+ * gemeinsamen ID-Zähler. Ein globaler Zugriff kann jedoch Abhängigkeiten
+ * verstecken und lässt Zustand über Aufrufer hinweg bestehen. Das erschwert
+ * isolierte Tests; getrennte Prozesse teilen sich diese Instanz ohnehin nicht.
+ *
+ * <p>Der Holder initialisiert die Standardbank erst beim ersten Zugriff.
+ * Seine Initialisierung ist thread-sicher, die Kontoverwaltung selbst nicht.
+ * Verhaltenstests erhalten eigene Banken mit eigener Factory. Ein temporärer
+ * Reset diente als Test-Workaround, wurde aber durch diese Isolation ersetzt.
  *
  * @author luigicavuoti, lro@gmx.ch, Hassan Alayan
  * @version 2.2
@@ -21,18 +31,33 @@ public class Bank {
      * Liste aller Konti.
      */
     private final TreeMap<String, Account> accounts;
+    /** Erzeugt Konten und vergibt ihre Nummern. */
     private final AccountFactory accountFactory;
 
+    /**
+     * Erstellt einen leeren Kontobestand mit der übergebenen Factory.
+     * @param accountFactory Factory für Kontotypen und Kontonummern
+     */
     Bank(AccountFactory accountFactory) {
         this.accounts = new TreeMap<>();
         this.accountFactory = accountFactory;
     }
 
     // Erst der erste Zugriff initialisiert Holder; die JVM tut das nur einmal.
+    /** Initialisiert die gemeinsame Bank beim ersten Zugriff. */
     private static class Holder {
+        /** Standardbank mit eigener Factory. */
         private static final Bank INSTANCE = new Bank(new AccountFactory());
+
+        /** Der Holder dient nur der Klasseninitialisierung. */
+        private Holder() {
+        }
     }
 
+    /**
+     * Gibt die gemeinsame Bank zurück.
+     * @return gemeinsame Standardbank dieses Classloaders
+     */
     public static Bank getInstance() {
         return Holder.INSTANCE;
     }
@@ -68,7 +93,8 @@ public class Bank {
     /**
      * Erzeugt ein neues Lohnkonto
      *
-     * @param creditLimit Kreditlimite (negative Zahl)
+     * @param creditLimit tiefster zulässiger Saldo (null oder negativ)
+     * @throws IllegalArgumentException bei positiver Kreditlimite
      * @return String die neue Kontonummer
      */
     public String createSalaryAccount(long creditLimit) throws IllegalArgumentException {
@@ -164,6 +190,10 @@ public class Bank {
         return getAccount(id).withdraw(date, amount, text);
     }
 
+    /**
+     * Listet die Konten mit dem höchsten Saldo.
+     * @return bis zu fünf Konten, nach Saldo absteigend sortiert
+     */
     public List<Account> top5HighestBalances() {
         return accounts.values()
                 .stream()
@@ -172,6 +202,10 @@ public class Bank {
                 .toList();
     }
 
+    /**
+     * Listet die Konten mit dem tiefsten Saldo.
+     * @return bis zu fünf Konten, nach Saldo aufsteigend sortiert
+     */
     public List<Account> top5LowestBalances() {
         return accounts.values()
                 .stream()
@@ -181,9 +215,10 @@ public class Bank {
     }
 
     /**
-     * Getter of the property <tt>account</tt>
-     *
-     * @return Returns the account.
+     * Sucht ein Konto nach seiner Nummer.
+     * @param id Kontonummer
+     * @return das gefundene Konto
+     * @throws InvalidAmountException wenn die Kontonummer unbekannt ist
      */
     public Account getAccount(String id) throws InvalidAmountException {
 
