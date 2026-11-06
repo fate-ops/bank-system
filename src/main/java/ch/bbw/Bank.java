@@ -21,11 +21,11 @@ public class Bank {
      * Liste aller Konti.
      */
     private final TreeMap<String, Account> accounts;
-    private final AccountFactory accountFactory;
+    private AccountFactory accountFactory;
     /**
      * Initialisiert eine neue Bank.
      */
-    public Bank() {
+    private Bank() {
         this.accounts = new TreeMap<String, Account>();
         accountFactory = new AccountFactory();
     }
@@ -171,6 +171,23 @@ public class Bank {
                 .sorted(Comparator.comparingLong(Account::getBalance))
                 .limit(5)
                 .toList();
+    }
+
+    // Die JVM initialisiert Holder erst beim ersten Zugriff und nur einmal.
+    // Dadurch entsteht die Bank verzögert und sicher bei parallelen Aufrufen.
+    private static class Holder {
+        private static final Bank INSTANCE = new Bank();
+    }
+
+    public static Bank getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    // Test-Workaround: Setzt Konten und ID-Zähler zwischen Tests zurück.
+    static void resetForTests() {
+        Bank bank = getInstance();
+        bank.accounts.clear();
+        bank.accountFactory = new AccountFactory();
     }
 
     /**

@@ -23,7 +23,7 @@ public class BankTests {
     @Test
     @DisplayName("Simple deposit on Bank-SavingsAccount should work")
     public void testDeposit() throws Exception {
-        Bank bank = new Bank();
+        Bank bank = Bank.getInstance();
         String id = bank.createSavingsAccount();
 
         bank.deposit(id, Scheduled.now(), 100_000, "Lohn");
@@ -35,7 +35,7 @@ public class BankTests {
     @Test
     @DisplayName("Simple withdraw on Bank-SavingsAccount should work")
     public void testWithdraw() throws Exception {
-        Bank bank = new Bank();
+        Bank bank = Bank.getInstance();
         String id = bank.createSavingsAccount();
         bank.deposit(id, Scheduled.now(), 100_000);
 
