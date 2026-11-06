@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 class BankSingletonTests {
 
     @BeforeEach
-    void resetBank() {
+    void resetSharedBank() {
         Bank.resetForTests();
     }
 
