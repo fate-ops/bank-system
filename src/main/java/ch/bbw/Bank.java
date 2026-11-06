@@ -22,12 +22,19 @@ public class Bank {
      */
     private final TreeMap<String, Account> accounts;
     private final AccountFactory accountFactory;
-    /**
-     * Initialisiert eine neue Bank.
-     */
-    public Bank() {
-        this.accounts = new TreeMap<String, Account>();
-        accountFactory = new AccountFactory();
+
+    Bank(AccountFactory accountFactory) {
+        this.accounts = new TreeMap<>();
+        this.accountFactory = accountFactory;
+    }
+
+    // Erst der erste Zugriff initialisiert Holder; die JVM tut das nur einmal.
+    private static class Holder {
+        private static final Bank INSTANCE = new Bank(new AccountFactory());
+    }
+
+    public static Bank getInstance() {
+        return Holder.INSTANCE;
     }
 
     /**

@@ -7,7 +7,7 @@ into a working Spring Boot REST API that a separate frontend (Vite/JS, built in 
 can talk to over HTTP.
 
 You are **not** starting from scratch — the domain logic already exists and is tested
-(`src/test/java/BankTests.java`, `BookingTests.java`, `src/test/java/ch/bbw/accounts/*`).
+(`src/test/java/ch.bbw.BankTests.java`, `BookingTests.java`, `src/test/java/ch/bbw/accounts/*`).
 This exercise is about wrapping that domain model in a web layer, not rewriting it.
 
 ## Prerequisites / current state

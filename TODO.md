@@ -37,7 +37,7 @@ task. Write the test, watch it fail (`./mvnw test`), then implement just enough 
 ## Sprint 4 — Factory pattern ([`docs/exercises/04-Exercise-factory-pattern.md`](docs/exercises/04-Exercise-factory-pattern.md))
 
 - [x] Id generation with type prefixes (`S-`/`Y-`/`P-`) and a counter starting at 1000 — *this is the exercise's own starting point, not something to redo.*
-- [ ] Tests written first: `src/test/java/ch/bbw/AccountFactoryTests.java` (should fail against the current buggy factory), `BankTests.testCreate()`.
+- [ ] Tests written first: `src/test/java/ch/bbw/AccountFactoryTests.java` (should fail against the current buggy factory), `ch.bbw.BankTests.testCreate()`.
 - [ ] **Bug still open:** `createPromoYouthSavingsAccount()` and `createSalaryAccount(long)` in `AccountFactory` still both return a plain `SavingsAccount` — fix to return the real subtypes (needs Sprint 3 done first).
 - [ ] `creditLimit` actually passed into `SalaryAccount`'s constructor instead of discarded.
 - [ ] `AccountType` enum introduced (type + prefix together).
