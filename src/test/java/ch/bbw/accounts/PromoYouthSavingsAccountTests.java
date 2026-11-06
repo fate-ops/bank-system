@@ -50,4 +50,26 @@ public class PromoYouthSavingsAccountTests {
         assertEquals(0, account.getBalance());
         assertTrue(account.getBookings().isEmpty());
     }
+
+    @Test
+    void depositWithTextIsBookedNormally() throws Exception {
+        PromoYouthSavingsAccount account =
+                new PromoYouthSavingsAccount("Y-1");
+
+        long balance = account.deposit(Scheduled.now(), 2_000_000, "Taschengeld");
+
+        assertEquals(2_000_000, balance);
+        assertEquals(1, account.getBookings().size());
+        assertEquals("Taschengeld", account.getBookings().getFirst().text());
+    }
+
+    @Test
+    void isASavingsAccountWithItsOwnType() {
+        PromoYouthSavingsAccount account =
+                new PromoYouthSavingsAccount("Y-1");
+
+        assertInstanceOf(SavingsAccount.class, account);
+        assertEquals("Promo-Jugendsparkonto", account.getAccountType());
+        assertEquals("Y-1", account.getId());
+    }
 }

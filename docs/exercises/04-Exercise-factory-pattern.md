@@ -77,7 +77,7 @@ Add `src/test/java/ch/bbw/AccountFactoryTests.java`:
   (the regression test for the discarded-parameter bug);
 - `createSalaryAccount(+50_000)` is rejected.
 
-Also implement the `testCreate()` stub in `src/test/java/ch.bbw.BankTests.java`: create two savings
+Also implement the `testCreate()` stub in `src/test/java/ch/bbw/BankTests.java`: create two savings
 accounts through `Bank` and assert that both ids are non-null, different, and resolvable via
 `Bank.getAccount(id)`.
 

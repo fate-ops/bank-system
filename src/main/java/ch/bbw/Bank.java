@@ -43,8 +43,12 @@ public class Bank {
         this.accountFactory = accountFactory;
     }
 
-    // Erst der erste Zugriff initialisiert Holder; die JVM tut das nur einmal.
-    /** Initialisiert die gemeinsame Bank beim ersten Zugriff. */
+    /**
+     * Initialisiert die gemeinsame Bank erst beim ersten Aufruf von getInstance().
+     * Die JVM initialisiert eine Klasse genau einmal und thread-sicher,
+     * deshalb braucht getInstance() kein synchronized (Variantenvergleich
+     * eager / synchronized / holder: siehe docs/architecture.md).
+     */
     private static class Holder {
         /** Standardbank mit eigener Factory. */
         private static final Bank INSTANCE = new Bank(new AccountFactory());
