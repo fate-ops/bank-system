@@ -62,4 +62,14 @@ public class PromoYouthSavingsAccountTests {
         assertEquals(1, account.getBookings().size());
         assertEquals("Taschengeld", account.getBookings().getFirst().text());
     }
+
+    @Test
+    void isASavingsAccountWithItsOwnType() {
+        PromoYouthSavingsAccount account =
+                new PromoYouthSavingsAccount("Y-1");
+
+        assertInstanceOf(SavingsAccount.class, account);
+        assertEquals("Promo-Jugendsparkonto", account.getAccountType());
+        assertEquals("Y-1", account.getId());
+    }
 }
